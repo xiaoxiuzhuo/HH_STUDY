@@ -1,0 +1,383 @@
+2020-5-23：
+执行js需要jquery.min.js：
+<script type="text/javascript" src="js/jquery.min.js"></script>
+-》最开始提示找不到，然后添加了"/"目录就可以了（IDEA-More Actions）
+★两个持久层框架对比：（☆优势、△劣势）
+1、Mybatis：
+☆SQL语句可以自由控制，灵活性高，性能略高于JPA
+☆SQL（可写在XML中）与代码分离，易于阅读和维护
+☆提供XML标签，支持编写动态SQL语句
+△简单CRUD操作还得写SQL语句
+△XML中有大量的SQL要维护
+△Mybatis自身功能有限，虽然支持Plugin
+
+-》MP既有Mybatis的优点，又不用维护大量的SQL语句
+2、JPA：（现多以SpringData JPA为主，spring提供的一套简化JPA的框架）
+☆移植性好（JPQL语句）
+☆提供了很多CRUD方法，开发效率高，不用写SQL？
+☆对象化程度更高
+
+2020-5-20：
+Mysql 8的JDBC写法：
+<property name="driverClass" value="com.mysql.cj.jdbc.Driver" />
+<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/你的数据库名称?useSSL=false&amp;serverTimezone=Hongkong&amp;characterEncoding=utf-8&amp;autoReconnect=true"/>
+
+------------------------------------------------------------------------------------------------
+环境：Java 1.8
+IDE：IDEA
+2020-5-15 Added：
+在IDEA创建的webapplication项目中，需要将依赖包放在/web/WEB_INF/lib下，输出目录为/web/WEB_INF/classes
+0、准备工作
+★安装Java后，记得在环境变量中设置JAVA_HOME
+★在Tomcat/bin目录下，往startup.bat最后添加一句pause可以debug显示出错的信息，不至于崩溃而直接闪退
+★设置IDEA的输出目录：在Project Structure -> Project Settings -> Modules中，选择 Use module compile output path
+，在Output path中设置实际的输出目录
+（当启动Tomcat以及部署在其中的项目时，会在指定的输出目录产生servlet类）
+★★在Tomcat/conf/server.xml中，在<Host></Host>标签中，设置项目的根目录：
+<Context path="/" docBase="C:\\Users\\Administrator\\IdeaProjects\\j2ee\\web" debug="0" reloadable="false" />
+★在IDEA项目中导入Java包：Project Structure -> Project Settings ->Libraries中添加
+★★Tomcat启动之后，默认会到WEB-INF/classes这个目录下去寻找类文件
+
+★★查看端口占用程序：netstat  -aon|findstr  "1099"（端口号）；然后最后一栏会显示PID，再输入：
+tasklist|findstr "4172"（PID），则找到对应的程序
+
+--------------------------------
+1、创建Servlet：
+(在IDEA中可以选择直接创建Java Web Application项目)，完整项目结构：
+-【j2ee】
+    -【.idea】
+        -【artifacts】
+            -j2ee_war_exploded.xml（）
+        -【libraries】
+            -servlet_api.xml（导入的servlet Jar包）
+        -.gitignore
+        -misc.xml
+        -modules.xml
+        -workspace.xml
+    -【out】
+        -【artifacts】
+            -【j2ee_war_exploded】->包含WEB-INF文件夹、index.jsp
+    -【src】
+        -HelloServlet.java（自行创建，New->Create New Servlet）
+    -【web】
+        -【WEB-INF】
+            -【classes】（自行创建）
+                -HelloServlet.class（在IDEA中运行Tomcat时自动生成，会输出至指定目录）
+            -【lib】（自行创建）
+            -web.xml
+        -index.jsp
+    -j2ee.iml
+
+2、修改web.xml，添加路径映射标签：
+<servlet-mapping>
+    <servlet-name>HelloServlet</servlet-name>
+    <url-pattern>/hello</url-pattern>  （把/hello这个路径，映射到 HelloServlet这个类上）
+</servlet-mapping>
+
+3、在IDEA为项目添加Tomcat配置：
+在Run/Debug Configurations中添加Tomcat Server -> Local；
+输入名称，添加Tomcat所在的文件路径，注意修改URL！
+在Deployment选项卡下，往Deploy at the server startup中添加Artifact
+
+4、运行Tomcat，在浏览器输入：localhost/hello
+
+【Servlet获取参数，返回响应】
+★Servlet在继承HttpServlet时，也继承了一个service(HttpServletRequest , HttpServletResponse)方法，参数列表与
+doGet(),doPost()相同
+★实际上，在执行doGet()或者doPost()之前，都会先执行service()；
+由service()方法进行判断，到底该调用doGet()还是doPost()
+★也可直接重写service()方法，在其中提供相应的服务，就不用区分到底是get还是post
+★一个Servlet的生命周期由：
+ 1、实例化 -------> 2、初始化 -------> 3、提供服务 -------> 4、销毁 -------> 等待被回收
+(构造函数调用)    (init函数调用)    (service函数调用)   (destroy函数调用)
+-》构造函数和init函数只会执行1次
+-》当tomcat关闭，或者web应用重启（Tomcat的server.xml配置中，reloadable="true" 表示有任何类发生的更新，web应用会自动重启），Servlet被销毁
+
+【页面跳转】
+-》redict：重定向，客户端跳转（全新的独立请求，不能再使用前面获得的数据）
+-》forward：服务端转发
+★跳转的方式有2种，分别是：（均在Servlet逻辑中）
+1、服务端跳转：request.getRequestDispatcher("success.html").forward(request, response);
+-》服务端跳转，浏览器地址【不会】发生变化，客户端跳转则会变化
+★★setAttribute和getAttribute可以用来在进行服务端跳转的时候，在不同的Servlet之间进行数据共享
+2、客户端跳转：response.sendRedirect("fail.html");
+★服务端的浏览器地址不会跳转是因为，服务器直接将目标地址的【html内容】发送给了浏览器
+★★客户端有两种跳转：
+302 表示临时跳转 -> response.sendRedirect("fail.html");
+301 表示永久性跳转 -> response.setStatus(301);response.setHeader("Location", "fail.html");
+-》301和302的区别主要在搜索引擎对页面排名的时候有影响，属于SEO范畴的概念
+
+【Servlet自启动】
+场景：Servlet的生命周期是在用户访问浏览器对应的路径开始的，而有时会有这样的业务需求： 
+tomcat一启动，就需要执行一些初始化的代码，比如校验数据库的完整性等。
+-》在init方法中，添加业务逻辑代码
+★配置Servlet自启动：在【web.xml】中，配置Servlet的地方，增加：
+<load-on-startup>10</load-on-startup> //10表示启动顺序，越小，优先级越高
+
+【Servlet response】
+★设置响应格式：response.setContentType("text/html");
+-》"text/html"即格式，与request.getHeader("accept")对应
+-》若遇到浏览器不能识别的格式，那么打开此servlet就会弹出一个下载的对话框（可实现下载功能）
+
+【设置响应编码】
+设置响应编码有两种方式：
+1、response.setContentType("text/html; charset=UTF-8");
+-》不仅发送到浏览器的内容会使用UTF-8编码，而且还通知浏览器使用UTF-8编码方式进行显示。所以总能正常显示中文
+2、response.setCharacterEncoding("UTF-8");
+-》仅仅是发送的浏览器的内容是UTF-8编码的，至于浏览器是用哪种编码方式显示不管
+
+【设置不使用缓存】
+使用缓存可以加快页面的加载，降低服务端的负担。但是也可能看到过时的信息，可以通过如下手段通知浏览器不要使用缓存：
+response.setDateHeader("Expires",0 );
+response.setHeader("Cache-Control","no-cache");
+response.setHeader("pragma","no-cache");
+
+★DAO(Data Access Object)类是进行数据操作的类
+★★★JavaBeans是Java中一种特殊的类，可将多个对象封装到一个对象（bean）中，特点是：
+1、可序列化
+2、提供无参构造器
+3、提供getter方法和setter方法访问对象的属性
+
+【Servlet的弊端】
+在Servlet编写html代码很痛苦，效率不高，可读性差，难以维护
+★JSP（JavaServer Pages）：最好可以在html文件里面写html代码，同时又能在里面调用java的变量
+
+【【JSP、JS、JQuery的区别】】
+1、JSP（JavaServer Pages）：
+●服务器端运行的网页代码文件；用于控制HTML的动态生成
+●并且通常负责调用后台数据库中的数据，形成能够根据使用情况的变化的，具有丰富数据交互效果的页面
+2、JS（JavaScript）：由浏览器解释执行,可以直接嵌入HTML文档中。在html里的嵌入方式：<script></script>
+3、JQuery：JS的轻量级版本，jQuery使用户【更方便】地处理HTML documents、events、实现动画效果，并且方便地为网站提供AJAX交互
+
+【Java MVC】
+★仅使用Servlet：不仅要写逻辑，还要准备html的代码，可读性差
+★仅使用JSP：逻辑代码不如Servlet那样方便
+★MVC：结合Servlet、JSP，角色/职责分离
+1、M模型：DAO类
+2、V视图：JSP
+3、C控制器：Servlet（从DAO类获取数据，并跳转到JSP中显示）
+
+
+--------------------------------Spring
+【AOP： Aspect Oriented Program 面向切面编程】
+功能分为：
+1、核心业务功能
+2、周边功能（又称切面）
+AOP：将核心业务功能和切面功能独立进行开发，然后将他们“编织”在一起
+（编织：有选择性地，低耦合地，将切面功能和核心功能结合）
+★★切面一般对如下内容进行封装，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可扩展性和可维护性：
+1、事务
+2、权限处理
+3、日志
+4、性能检测
+5、异常处理
+-》切面和核心业务没有关系！
+【注解】
+@Autowired是按照先byType 后 byName @Resources是按照先byName后byType
+@Autowired 一般用在service层，@Resources一般用在Mapper层，@Component一般用来配置
+
+★★★Spring AOP的实现方式：
+1、通过 Spring API 实现，让自定义的类继承自Spring提供的接口，如：MethodBeforeAdvice,AfterReturningAdvice等
+（调用时机由实现的类决定）
+2、在xml中定义方法的调用时机
+3、注解：
+@Aspect表示这是一个切面
+@Component表示这是一个bean,由Spring进行管理
+
+--------------------------------Spring MVC
+【非注解方式】
+1、在web.xml中指定重定向类为：org.springframework.web.servlet.DispatcherServlet
+（所有的访问都会经过DispatcherServlet）
+2、创建springmvc-servlet.xml，在其中指定映射关系<prop key="/index">indexController</prop>
+【注解方式】
+1、在类前面加上@Controller 表示该类是一个控制器
+2、在方法handleRequest 前面加上 @RequestMapping("/index") 表示路径/index会映射到该方法上
+-》无须在springmvc-servlet.xml中配置映射，加上<context:component-scan base-package="controller" />即可，
+表示从包controller下扫描有@Controller注解的类
+【视图定位】
+1、<bean id="irViewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/page/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+2、ModelAndView mav = new ModelAndView("index");
+【显示中文】
+在web.xml中，添加filter即可：<filter-name>CharacterEncodingFilter</filter-name>
+
+【配置web.xml允许访问*.jpg】
+配置springmvc的servlet的时候，使用的路径是"/"，导致静态资源在默认情况下不能访问，所以允许访问jpg要加上：
+<servlet-mapping>
+	    <servlet-name>default</servlet-name>
+	    <url-pattern>*.jpg</url-pattern>
+	</servlet-mapping>
+且必须加在springmvc的servlet之前
+★★在用户表单中，提及的属性名称，必须与bean中的属性相对应，以便spring能自动注入属性，在Controller中，一般会接受UI应的bean类型的参数（完成自动注入）
+
+【拦截器】extends HandlerInterceptorAdapter
+★（springxml中配置）定义在mvc:interceptor下面的表示是对特定的请求才进行拦截的
+★当设置多个拦截器时，先按顺序调用preHandle方法，然后逆序调用每个拦截器的postHandle和afterCompletion方法
+★3个方法：
+1、preHandle：在业务处理器处理请求之前被调用
+2、postHandle：在业务处理器处理请求执行完成后,生成视图之前执行的动作
+3、afterCompletion：在访问视图之后被调用
+
+--------------------------------Maven：依赖管理系统
+★作用：管理（负责下载，处理包间的依赖）、及存放项目需要的jar包的
+-》maven采用一个仓库，多个项目的方式，让多个项目共享一个仓库里的相同jar包
+★在 maven\conf\settings.xml中可以配置下载源以及仓库位置（默认下载位置）
+★★Maven和Gradle项目的区别：
+Maven：依赖由pom.xml定义（XML方式组织）；更新慢（无资金支持）
+-》解决依赖冲突：路径最近原则以及定义顺序原则
+
+Gradle：依赖由build.gradle定义（代码方式组织）；更新快（有资金支持）
+-》解决依赖冲突：选用新的版本
+
+--------------------------------Mybatis
+★2个配置文件：mybatis-config.xml、Category.xml
+★Mybatis和hibernate都需要一个主配置文件，用以提供连接数据库的驱动（数据库名称，编码方式，账号密码）
+-》Mybatis的配置文件中，还应该提供Category类的别名（实体类，用于映射数据库中的表）以及映射Category.xml
+★Category.xml配置文件中存放相关的SQL执行语句
+★★Mybatis动态SQL:
+1、if标签
+2、where/set标签：去掉多出来的and或者or
+3、trim标签：定制功能
+4、Mybatis里面没有else标签，但是可以使用when、otherwise标签来达到这样的效果
+5、bind标签，对指定内容进行替换，提高代码的可移植性
+★★Mybatis注解：（上述内容都针对的是XML方式）
+【一对多：】
+@Result(property = "products", javaType = List.class, column = "id", many = @Many(select = "com.how2java.mapper.ProductMapper.listByCategory") ) 
+1、property属性：指定将关联查询的结果封装到Category对象的product属性上
+2、column属性指定：指定在执行@Many注解中定义的select语句时，把category表的id字段当做参数传入
+3、many属性：指定通过@Many注解定义关联查询的语句是ProductMapper中的listByCategory方法				
+？关于SQL类动态生成SQL语句
+★在Mysql中，只有当表的类型是INNODB的时候，才支持事务
+（前提：当前的Mysql【服务器】本身要支持INNODB）
+★加载方式：
+1、积极加载：XML方式，注解方式
+2、延迟加载：注解方式 -》提高效率和节约资源
+★分页：XML和注解方式
+-》PageHelper是一款犀利的Mybatis分页插件，使用了这个插件之后，分页开发起来更加简单容易
+★一级缓存：（访问的数据曾被访问过，并放置于缓存中，使得后续访问不需要再访问数据库）
+存在于【session】中
+★实现二级缓存：（针对不同的Session中没有缓存的问题）
+1、<setting name="cacheEnabled" value="true"/>
+2、在Category.xml中增加 <cache/>
+3、序列化Category：implements Serializable
+★c3p0是一个开源的JDBC连接池，实现了数据源和JNDI绑定，支持JDBC3规范和JDBC2的标准扩展
+-》连接池：创建和管理连接的缓冲池的技术
+（dbcp也是一个连接池，但没有回收空闲连接的功能，c3p0有）
+
+★Mybatis逆向工程：（需要Mybatis Generator jar包）
+作用：根据数据库中的单表自动生成mapper.java、mapper.xml、pojo类
+局限性：只能自动生成一些简单的CRUD功能，涉及到复杂的多表关联查询需要自己写（多对一，一对多等）
+
+--------------------------------log4j
+★有时候需要打印日志，知道mybatis执行了什么样的SQL语句
+（mybatis自身是没有带日志的）
+★导入jar包
+★在src目录下，新建文件log4j.properties
+
+
+--------------------------------Spring Boot
+★★创建Springboot项目：
+1、New -> Project -> Spring Initializr 
+2、Artifact：springboot
+3、Web-》Spring Web
+（新建好的springboot项目应该自带一个SpringbootApplication）
+
+★内嵌Tomcat或Jetty等Servlet容器
+★SpringBoot框架中还有两个非常重要的策略：
+1、开箱即用Outofbox：
+-》在MAVEN项目的pom文件中添加相关依赖包，然后使用对应注解来代替繁琐的XML配置文件以管理对象的生命周期
+2、约定优于配置：
+
+要进行打包和分发的工程会依赖于像Maven或Gradle这样的构建系统？
+
+★@RestController 是spring4里的新注解，是@ResponseBody和@Controller的缩写
+★启动方式不是tomcat，而是启动的一个Java类的主方法： 
+SpringbootApplication类的主方法把tomcat嵌入进去了，不需要手动启动tomcat了
+★部署方式：Jar、War
+1、Jar部署方式：在项目根目录下运行mvn -install会生成xx.jar文件，然后java -jar xx.jar运行即可
+2、War部署方式：在项目根目录下运行mvn clean package会生成xx.war文件；重命名war文件（因为war部署方式需要在路径上加上该war名；最后将其放在tomcat的webapps目录下，运行tomcat的startup.bat即可）
+
+【热部署】
+1、添加依赖：<artifactId>spring-boot-devtools</artifactId><optional>true</optional>
+2、添加插件：<artifactId>spring-boot-maven-plugin</artifactId>
+<configuration>
+                    <fork>true</fork>
+                    <addResources>true</addResources>
+                </configuration>
+3、修改IDEA设置：File-Settings-Compiler-Build Project automatically
+4、Ctrl+Shift+Alt+/ 选择Registry；找到选项Compiler autoMake allow when app running打勾
+（待证实）spring.devtools.restart.enabled = true
+
+★可以通过修改application.properties，修改访问的端口号和上下文路径
+
+【springboot配置切换】
+-》通过多配置文件实现多配置支持与灵活切换：
+通过application.properties里的spring.profiles.active 灵活地来切换配置环境
+★部署时也可通过命令行参数指定配置文件：--spring.profiles.active=pro
+★springboot除了支持.properties配置文件外，还支持yml格式的配置文件
+★★application.yml：
+1. 不同“等级” 用冒号隔开
+2. 次等级的前面是空格，不能使用制表符(tab)
+3. 冒号之后如果有值，那么冒号和值之间【至少有一个空格】，不能紧贴着
+
+【JPA(Java Persistence API)】
+-》Sun官方提出的Java持久化【规范】，真正干活的可能是Hibernate，TopLink等等实现了JPA规范的不同厂商
+★JPA 默认用的是 Hibernate
+★★JpaRepository 这个父接口，就提供了CRUD, 分页等等一系列的查询了，直接拿来用，不需要二次开发：
+1、public interface CategoryDAO extends JpaRepository<Category,Integer>：
+创建dao接口CategoryDAO，继承了JpaRepository，并且提供泛型<Category,Integer> 表示这个是针对Category类的DAO,Integer表示主键是Integer类型
+2、Category类中使用各种注解，指明该类与数据库中的表以及表的字段间的对应关系：
+@Entity：表明这是个实体类
+@Table(name = "category_")：表明这个类对应的表名是category_
+@Id：表明主键
+@Column(name = "id")：表明对应的数据库字段名
+@GeneratedValue(strategy = GenerationType.IDENTITY)：表明自增长方式
+★★有注解的类，不能new，也不能有静态方法调用dao层
+★★spring的注解注入dao接口的目的是：为了让接口不用进行实例化就可以被任何一个类调用
+
+★spring提供了分页的功能：
+Pageable pageable = PageRequest.of(start, size, sort);
+★PageHelper插件则是由Mybatis提供的
+
+【单元测试】
+有时需要在springboot里做单元测试，而不是直接跑起来-》依赖包：spring-boot-starter-test
+-》在测试类中加上注解：
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = SpringbootApplication.class)
+运行的时候选择 JUnit Test 方式
+★JPA条件查询方式很有意思，不需要写SQL语句；只需要在dao接口里按照规定的命名定义方法，就能查询相应字段
+★JPA方便之处就在于表与表之间关联不大的查询，多表建议mybatis
+★JPA条件查询的实现原理：反射获取接口方法里提供的信息，底层拼接sql语句
+
+【反射】
+★类对象：描述一个类有哪些属性和方法
+Class pClass=Class.forName("kuki.Hero");
+★在JVM中，针对每个类，在ClassLoader中只会存在【一个】类对象
+★获取一个类对象时，该类的【静态初始化块】会被执行，尽管该对象没有被初始化！
+-》静态的东西都是跟类联系在一起的
+★★在JDBC类也是在静态初始化块中执行一些操作，因此只需要获取其类对象而不用实例化类本身
+★反射机制创建对象：
+与传统的通过new 来获取对象的方式不同 
+1、反射机制，会先拿到Hero的类对象：Class pClass=Class.forName(className);
+2、然后通过类对象获取【构造器对象】：Constructor c= pClass.getConstructor();
+3、通过构造器对象创建真正的对象：Hero h2= (Hero) c.newInstance();
+★反射访问属性：对于private修饰的成员，需要使用setAccessible(true)才能访问和修改
+1、getField：只能获取public的，包括从父类继承来的字段
+2、getDeclaredField：可以获取本类所有的字段，包括private的，但是不能获取继承来的字段 (除非加上setAccessible(true)，否则不能访问该private字段的【值】)
+★反射的好处：不用修改代码，所有的配置工作可独立放在配置文件中
+（这也是Spring框架的基本目标与原理）
+
+【Restful】：使用同一个url，但约定不同的method来实施不同的业务逻辑
+
+
+--------------------------------Redis
+★Redis就像是一个HashMap，不过不是在JVM中运行，而是以一个独立进程的形式运行
+一般说来，会被当作缓存使用。 因为它比数据库快，所以常用的数据，放在这里就提高了性能
+★一次性运行：
+redis-server redis.windows.conf
+★作为服务运行：
+1、redis-server --service-install redis.windows.conf
+2、在windows服务管理中打开

@@ -1,0 +1,50 @@
+--------------------------------MyBatis相关
+【TypeHandler类型处理器】：JavaType 与 JdbcType 之间的转换
+将自定义的类型或其他类型 -> 数据库类型（存）
+将数据库类型 -> 自定义的类型或其他类型（取）
+-》自定义类型处理器：
+通过实现 org.apache.ibatis.type.TypeHandler 接口实现
+★setParameter方法：把 java 对象设置到 PreparedStatement 的参数中
+★getResult方法：从 ResultSet、CallableStatement中取出数据转换为 java 对象
+
+【resultMap】：将查询到的复杂数据（比如查询到几个表中数据）映射到一个结果中
+
+
+--------------------------------MyBatis-Plus
+★一个MyBatis的增强工具，在MyBatis的基础上只做增强不做改变，为简化开发、提高效率而生
+特性：
+※无侵入：只做增强不做改变，引入它不会对现有工程产生影响，如丝般顺滑
+※内置分页插件（实现了物理分页）
+※内置性能分析插件：可输出 Sql 语句以及其执行时间，建议开发测试时启用该功能，能快速揪出慢查询
+※内置全局拦截插件：可以防止注入攻击
+★引入MyBatis-Plus之后，请不要再引入MyBatis、MyBatis-Spring
+★配置：在Application类中配置MapperScan注解（spring原生注解）
+
+<---------------- 常用注解 ---------------->
+【表注解】
+@TableName
+
+【字段注解】
+@TableId：主键字段
+@TableField：非主键字段
+@Version：乐观锁
+@EnumValue：枚举字段
+@TableLogic：表字段逻辑处理注解（逻辑删除）？
+@SqlParser：租户注解,支持method上以及mapper接口上
+
+<---------------- 核心功能 ---------------->
+【代码生成器】
+AutoGenerator可以快速生成Entity、Mapper、Mapper XML、Service、Controller等各模块代码
+（与Mybatis逆向工程类似）
+★用模板引擎（Velocity（默认）、Freemarker、Beetl）来生成目标文件
+★自定义模板引擎：继承类 com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine
+
+
+
+
+
+--------------------------------其他
+★freemarker：基于模板和要改变的数据，用来生成输出文本（HTML网页、电子邮件、配置文件、源代码等）的通用工具
+
+
+

@@ -1,0 +1,386 @@
+2020-5-23：
+Java.util.Properties：
+在Java中，其配置文件常为.properties文件，格式为文本文件，文件的内容的格式是“键=值”的格式
+（文本注释信息可以用"#"来注释）
+-》class Properties extends Hashtable<Object,Object>
+
+2020-5-19：
+匿名内部类，形式：new 父类名(){}
+1、必须继承一个父类或接口
+2、因为没有名字所以无法定义构造函数，但可使用【构造代码块】
+return new SQL() {{
+            SELECT("P.ID, P.USERNAME, P.PASSWORD, P.FULL_NAME");}}.toString();
+
+2020-4-19：
+*volatile关键词确保多线程能正确处理单例？变量
+
+JAVA的特点：语法友好，OOP、内存管理、高跨平台移植性
+-》写一次就在所有地方执行（write-once/run-anywhere）
+现在的JAVA又快又有威力
+★java的工作方式：
+源代码(sc.java)编译-》生成字节码（平台无关）-》JAVA虚拟机读取并执行字节码
+：javac程序来进行编译，没有错误则生成sc.class文件
+★Java简史
+v1.02 -》250个类，bug很多，applet是重点
+v1.1 -》500个类，适合开发图形界面
+Java2[v1.2-v1.4] -》2300个类，可书写企业级应用程序或移动应用程序，J2ME,J2SE,J2EE
+Java5[v1.5] -》3500个类，额外对语言本身作了重大改变，加了部分新功能
+：Java 5.0又称为Tiger
+★每个Java程序最少都会有1个类以及一个main()方法
+★注释：//
+★System.out.print不换行，.println换行
+★Java是强类型的语言：变量必须声明类型，赋值或运算时类型必须一致
+：如果语言经常隐式地转换变量的类型，那这个语言就是弱类型语言，如果很少会这样做，那就是强类型语言 。 Python很少会隐式地转换变量的类型，所以Python是强类型的语言。
+：C++、JAVA、Python都是强类型语言
+★违反调用private方法由编译器检查
+★★Java的类中可带main()函数，作为程序的起点
+【JAVA程序】：由一组类组成，其中一个类带有main()方法
+：当类文件数量很多时，可以将所有文件打包成jar，并在其中引入manifest文件，指出哪个文件带有main方法
+★JAVA没有全局变量这回事，public和static修饰符的作用类似global修饰符
+★★Java的变量只有两种类型：基础类型（primitive主数据类型）、对象引用
+【primitive主数据：boolean、char、byte、short、int、long、float、double】
+:除非加上f,否则所有带小数点的值会被JAVA当做double
++易混淆+：Dog myDog=new Dog();
+★数组是对象而不是primitive主数据类型
+【隐式展开】：将byte放进int尺寸的杯子中
+★实例变量有默认值，而局部变量没有（使用前必须初始化）
+★Java 5.0(Tiger)开始，引入了加强版for循环，for(String name:Array)
+★Java 5.0之前是无法为ArrayList指定存放的元素类型的，它是异质对象的集合
+★Java函数库中的每个类都属于某个包
+
+★★java.lang：每个Java程序运行时，系统都会自动地引入java.lang包，所以这个包的加载是缺省的（包括了运行Java程序必不可少的系统类，如基本数据类型、基本数学函数、字符串处理、线程、异常处理类等。）
+★javax表示曾经是扩展，后来被Sun认可的类（为了保护程序，保留了javax）
+★java的import与C的include不同，import只是省去每个类前面的包名称，不会使程序变大
+★运行多态时，引用类型可以是实际对象类型的父类：
+Animal myDog=new Dog();
+★Java的继承深度大部分不会超过1，2层（尽可能少一点，GUI类除外）
+★有三种方法可以防止某个类被继承：
+1、存取控制（标记为非公有的类只能被同一个包的类继承）
+2、final修饰符（表示是继承树的末端）
+3、让类只拥有private构造函数
+-》final可以确保安全，保证方法都是自己的版本
+-》final也可以只标识方法
+★子类在继承时，不能降低__方法__的存取权限！
+★重载的方法不允许只有返回类型不同
+
+------------------------接口与抽象类
+★接口是一种100%纯抽象的类（无法初始化的类）
+★有些类不应该被初始化（标记为抽象类），但可以作为引用类型
+★声明抽象类：在类的声明前加上关键词abstract
+★★抽象的类可以带有抽象和__非抽象__的方法
+★抽象的方法（将方法标记为abstract）代表该方法必须在特定的类下才有意义
+-》抽象的方法没有实体
+★★拥有抽象方法的类必须是抽象类！
+★★★多态的最终目的是：使用父类型作为方法的参数、返回类型。这样的话，可以加入新的子类型到程序中，而不需要重写或修改程序
+★万能的通用类：Object
+-》Java中的所有类都是从Object类继承出来的
+
+
+★没有继承过其他类的类会隐式地继承Object
+★Object类有什么？
+equals()、getClass()、hashCode()、toString()
+★Object最常见的用途是用在线程的同步化上面
+★★即使所有类都继承自Object，但当某个对象是以Object类型来引用时，Java会把它当做Object类型的实例
+★任何从ArrayList<Object>取出的东西都会被当做Object类型的引用而不管它原来是什么
+★★编译器只会根据__引用类型__来判断有哪些method可以使用（只能调用引用类型的方法），而不是对象的类型，如：Object o=new Dog(); o.bark();//错误
+★★转换回原来的类型：Dog d=(Dog) o;//确定o引用的对象是Dog
+if (o instanceof Dog){Dog d=(Dog) o;}//不确定
+
+★★Java不支持多重继承，因为存在“致命方块”问题
+-》Java基于简单化的原则不支持多重继承，解决“致命方块”需要复杂的模糊性处理规则
+★★Java用接口（interface）来代替多重继承机制
+-》接口的定义：public interface Pet{...}
+-》接口的实现：public class Dog extends Canine implements Pet{...}
+
+★接口方法带有public和abstract的意义，接口的方法必须是抽象的（无实体）
+★若以接口取代类作为类型或返回类型，就可以传入任何有实现该接口的东西
+-》使用接口可以继承超过一个以上的来源
+★★允许不同继承树的类实现共同的接口对Java API非常重要
+★在子类中通过super()可以调用父类的方法
+★实现某接口的类必须实现它所有的方法
+
+------------------------构造器与垃圾收集器
+★对象存在于堆上；方法调用和局部变量存在于栈上
+★实例变量是被声明在类中的，每个实例针对实例变量可能有不同的值（成员变量）
+★当调用方法时，方法会放在【调用栈】的栈顶
+-》实际上，在【调用栈】中的是方法的堆栈块，带有方法的状态
+★局部变量声明在方法或方法的参数上
+★对象引用变量和primitive主数据类型变量都是放在栈上
+★对象的实例变量存在于对象所属的堆空间上
+-》若实例变量是主数据类型，则java会根据类型大小为其预留足够的空间
+-》若实例变量是对象引用，则java只会留下引用量而不是对象本身所用到的空间。
+★Java可以有与类同名的方法而不会变成构造函数，区别在于是否有返回类型
+★构造函数不能被继承
+★如果你已经写了一个有参数的构造函数，则编译器不会自动合成无参数的版本，必须自己额外添加无参数版本的构造函数
+★实例变量有默认值
+★即使是抽象的类，也有构造函数
+★调用父类构造函数的唯一途径是super()
+-》如果我们没有手动调用super()，则编译器会帮我们加上
+-》编译器帮忙加的是无参数的版本，即使父类有多个重载版本的构造函数，也只有无参数版本会被调用
+★对super()的调用必须是构造函数的第一条语句！
+★使用this来从某个构造函数中调用同类的另一个构造函数
+-》this只能在构造函数中，且必须是第一行语句
+-》super()和this()不能同时调用
+★对象的生命周期依赖于引用变量的生命周期
+★对null引用调用圆点运算符会在执行期出现NullPointerException错误
+
+------------------------数字与静态
+★有些时候我们不需要创建出相应的对象，而只需要调用这些对象的方法，如Math类
+（无需实例）
+★static标记出不需要类实例的方法：以类的名称调用静态方法：Math.min(1,5);
+-》通过类实例（的引用）来调用静态方法也是可行的，但不建议如此操作
+★带有静态方法的类通常不打算被初始化，但不是说不能被初始化，实际上，可以在类中任意地组合静态与非静态的方法
+★可以将构造函数声明为私有，来防止类被初始化
+（抽象的类是不能被初始化的）
+★main函数是静态的，因此带有main函数的类是带有静态方法的类
+★★静态的方法不能调用非静态的变量与方法
+★静态变量的作用：被同类所有实例共享（如计算某个类的实例总数）
+★如果没有给静态变量赋初始值，它会被设定成对应类型的默认值
+★静态变量是在类被加载时初始化的，类被加载是因为：
+1、有人第一次尝试创建该类的新实例
+2、尝试使用该类的静态方法或变量
+-》静态变量会在该类的任何对象创建之前完成初始化
+★一个被final标记的变量代表其一旦被初始化，值就恒定不变
+-》常数变量的名称应该都是大写字母
+★静态初始化程序（static Initializer）是一段在加载类时会执行的程序代码，会在其他程序能使用该类之前就执行，适合放静态final变量的起始程序：static{...}
+★★关于final关键字：
+1、final修饰变量时表示变量不能被【改变】
+2、final修饰方法时表示方法不能被【覆盖】
+3、final修饰类时表示类不能被【继承】
+★final的静态变量必须在声明或静态初始化程序中赋值
+★primitive主数据类型的包装：
+！在Java 5.0之前，需要以对象方式来处理primitive主数据类型时，必须将其包装：
+Interger iWrap=new Integer(i); //包装
+int i=iWrap.intValue(); //解包
+-》每一个primitive主数据类型都有个包装用的类，但无需import
+★Autoboxing：Java 5.0引入的新功能，可以自动封装与解包
+★generic类型的规则是你只能指定【类】或【接口】类型，ArrayList<int>将无法通过编译
+★+运算符是Java中唯一被重载过的运算符
+★格式化方法String.format
+%[argument number][flags][width][.precision]type
+
+【待补充】
+★内部类：嵌套在另一个类的内部。内部类可以使用外部类所有的方法与变量（包括私有）
+★内部类的实例一定与某个外部类的实例相绑定
+★★内部类的作用：
+1、提供了在一个类中实现同一接口的多次机会
+2、由于Java不支持多重继承，因此内部类可以充当外部类无法继承的类
+
+------------------------序列化与非序列化
+通过序列化来存储对象是Java程序在来回执行期间存储和恢复数据最简单的方式
+1、序列化
+★如果类的某实例变量不应该被序列化，可将其标记为transient（序列化时会忽略）
+★父类实现序列化，则子类就会自动地实现，不管是否有明确的声明
+
+2、解序列化
+★解序列化时，如果Java虚拟机找不到或无法加载对应【类】，则会抛出异常
+★如果对象在继承树上有个不可序列化的祖先类，则该祖先类及【在它之上的类】（即使可序列化）的构造函数就会执行，重新初始状态
+★Java中有一种机制，RMI（Remote Method Invocation），让你可以把序列化的【对象】当做参数的一部分传递，若接收方的Java虚拟机没有找到该类，则可以自动使用URL来取回并加载该类
+
+★Java中的File对象表示磁盘上的文件（路径），通过File对象可以创建目录
+★用到string【文件名】类型的参数，大部分可以用File对象来代替
+★可通过FileReader并配合BufferedReader（提高效率）来读取文件
+-》如果想要读写【文本】文件，BufferReader&BufferWriter（链接到FileReader&FileWriter）就够用了
+★java.nio这个类带来了重大的效率提升，可以充分利用机器上的原始容量
+1、通过nio，你可以直接控制buffer
+2、nonblocking的输入/输出（在没有东西可读取或写入时不用阻塞等待）
+-》nio更为复杂，需要谨慎使用
+
+★在解序列化对象时，如果类已经被修改，则还原可能存在风险，此时可以：
+1、默认：如果serialVersionUID不匹配，则还原失败
+2、将serialVersionUID放在类中，自己保证还原的正确性（兼容性）
+★serialVersionUID根据类的结构信息计算得到的，当对象被序列化时，会携带该信息
+
+------------------------网络联机
+★所有网络运作的底层细节都由java.net函数库处理掉了
+★传送与接收网络上的数据不过是链接使用不同链接串流的输入/输出而已
+
+------------------------线程与Thread
+★单处理器的机器只能有一个执行中的线程
+★java.lang.Thread有启动线程start、连接线程join、以及闲置sleep等方法
+★Runnable表示线程的任务，它是一个接口，只有一个方法：public void run()
+★线程的状态：新建、可执行（或实际执行，或等待执行）、执行中（实际执行）
+-》当线程等待其他资源时，可能会暂时失能（被阻塞）
+★第二种实现线程的方法是：子类化Thread并覆盖run方法（无需Runnable）
+-》通常来说不推荐（没有必要）
+★Thread对象只能执行一次线程任务，run完成后，就无法再次启动，只剩下对象本身
+★★确保线程有机会执行的最好方式是让其周期性地sleep
+-》sleep可能会抛出异常（被中断时），因此需要放置在try块中
+-》》通常不必刻意使用sleep来保证其他线程会被执行
+★synchronized关键词来修饰【方法】使它每次只能被单一线程存取
+-》synchronized锁住的是对象，而不是方法或者数据
+-》每个Java对象都有一把锁
+-》如果对象有同步化的方法，则线程只能在取得钥匙的情况下进入线程
+★对象就算有多个同步化的方法，也还是只有【一个】锁
+★事实上，同步化的规模可以小于方法，可以只修饰一行或数行指令而不必整个方法都同步化
+（详见P514）synchronized(this){...}
+★★★Java没有处理死锁的机制，所以程序设计时必须非常谨慎以避免死锁
+-》不像数据库系统拥有事务回滚机制
+★针对静态变量的保护，每个被载入的【类】也有锁
+
+------------------------集合与泛型
+★ArrayList没有排序功能，但实现了list接口，可传给java.util.Collections的sort()方法
+★Collections是一个静态类
+★TreeSet以【有序】状态保持并可以防止重复（C++：set）
+★HashMap（C++：unordered_map）
+★LinkedList
+★HashSet（C++：unordered_set）
+★LinkedHashMap类似HashMap，但可记住元素插入的顺序
+★toString()是定义在Object类中，Java中的每个类都有继承到。当对象被System.out.println列出时，toString会被调用
+★泛型（generic）功能是Java 5.0开始加入的特质
+-》泛型意味着更好的类型安全性
+-》几乎所有会以泛型写的程序都与处理集合有关
+★★声明泛型的方法：
+1、使用定义在类声明中的【类型参数】
+2、使用未定义在类声明中的类型参数，形如：
+public static <T extends Comparable<? super T>> void sort(List<T> list)
+在【返回类型】之前，指定方法的【类型参数】T
+-》上述声明表示，sort的参数是一个List，其元素类型是继承（实现）Comparable的类型，其中Comparable的类型参数是T或者T的父型
+★实际上，Comparable是一个接口而不是类，所以extends关键词是否合理？
+-》以泛型的观点来说，extend代表extend或implement
+★在语言中加入【新关键词】是很重大的事件，有时可以对新版Java程序加上选项来让它仿真旧版的行为，通过指定特殊标记给编译器或Java虚拟机就可以如此
+★关于Comparable接口：
+只有一个方法：int compareTo(T o);返回负数，0，正数表示比较的结果
+-》String类也有个compareTo方法
+
+★sort还有一个重载的版本，接受一个Comparator参数，自定义比较的规则
+★Comparator是一个用于比较的独立的类
+★对象的相等性与引用相等性
+1、引用相等：堆上同一对象的两个引用是相等的
+2、对象相等：堆上不同对象相等仅当【从Object继承下来的hashCode()与equals()方法】结果相等
+-》hashCode()默认的行为会返回每个对象特有的序号（根据内存位置计算序号）
+★HashSet检查元素的重复：先检查hashCode再检查equals（因为不同对象hashCode也可能相同）
+-》两对象相等则哈希一定相等，但反之不一定成立
+★不同对象可能有相同的哈希值
+★TreeSet可以传入Comparator也可以使用对象的compareTo（不传额外参数）
+★数组的类型是在运行期间检查的，但集合类型检查在编译期间
+★万用字符<? extends Animal>：在使用带有<?>的声明时，不能加入任何东西到集合中
+以下两行声明是等价的：
+1、public <T extends Animal> void takeThing(ArrayList<T> list)
+2、public void takeThing(ArrayList<? extends Animal> list)
+
+------------------------Java程序部署
+★部署的方式：
+1、本机：Executable Jar
+2、C/S：Web Start、RMI APP
+3、远程（B/S）：HTTP
+★Java程序的组织方式：将源代码(.java)与编译产生的类文件(.class)分离：
+通过编译选项 -d来制定编译文件的存储位置
+★JAR：Java ARchive，JAR文件是个pkzip格式的文件，将一组类文件包装起来
+-》jar工具类似于unix中的tar?
+-》可创建出可执行的JAR（用户不需要把文件抽出来就能运行）：创建出manifest文件（带有JAR信息，告诉Java虚拟器哪个类含有main()方法）
+★manifest.txt文件内容：
+Main-Class:MyApp（无java后缀，且要换行）
+★执行jar工具来创建JAR文件
+★执行JAR：java -jar app1.jar（注意jar包位于环境变量中）
+★包的主要目的之一就是防止名称冲突
+-》建议：包的名称里含有domain名称
+★★在import前加上包指令：
+package com.headfirstjava;
+-》同时要注意，类文件要放在对应的位置下：com/headfirst/
+★javac -d ../classes com/headfirstjava/*.java
+-》建立好源文件的目录结构后，该java编译指令会建立对应的输出目录结构
+★创建JAR包时，要注意类文件在对应的目录结构下，manifest.txt位于classes目录下，其内容：
+Main-Class:com.headfirstjava.a
+-》执行jar工具创建jar包：jar -cvmf manifest.txt a.jar com（只指定com目录就行）
+★将JAR内容列出：jar -tf a.jar
+★将JAR解压：jar -xf a.jar
+             →META-INF/MANIFEST.MF
+★JAR文件结构
+             →com/headfirstjava/a.class
+★★JWS(Java Web Start)：如同浏览器plug-in的小Java程序
+-》当JWS下载你的程序(JAR)时，它会调用程序的main来启动应用程序
+-》Web服务器会向JWS发送.jnlp文件，JWS读取后会继续请求.jar文件
+★.jnlp(Java Network Lanuch Protocol)是一个XML文件
+-》指定了JAR包的网络位置
+-》指定了JAR中main函数所在的类（同manifest.txt）
+★JWS使得能从网站来部署独立的客户端程序，客户端必须安装helper app
+
+------------------------RMI远程部署
+★调用远程对象的方法就像是本地的一样
+★使用RMI时，由于涉及网络传输，所以必须要决定以下两种协议之一：
+1、JRMP：RMI原生协议（Java to Java）
+2、IIOP：较麻烦
+★在RMI中，客户端的辅助设施称为stub、服务器端的称为skeleton
+★★★创建远程服务的【5】个步骤：
+1、创建Remote接口：定义了客户端可以远程调用的方法
+-》stub和服务都会实现此接口
+2、创建服务类以实现Remote接口：它是客户端会调用的对象
+3、用rmic生成stub和skeleton两个文件（rmic MyRemoteImpl，服务类的类名）
+-》rmic是JDK附带的工具
+4、启动RMI registry：用户从此取得代理（执行命令rmiregistry）
+5、启动远程服务：向RMI registry注册
+★继承的接口是java.rmi.Remote
+-》可创建自己的接口来继承该接口（接口可以继承其他接口）
+-》接口里的所有方法都要声明可能抛出RemoteException
+（每个远程调用都会被认为是有风险的）
+-》确定远程方法的【参数】以及【返回值】是primitive或Serializable的：
+任何远程方法的参数会被打包通过网络传送（by序列化），因此要不就是主数据类型，要不就实现
+Serializable
+★服务器端的服务【类】必须实现Remote接口，为了让其拥有远程有关的功能，可令其继承
+UnicastRemoteObject
+-》由于UnicastRemoteObject的构造函数可能抛出RemoteException异常，因此服务类的处理方式是：声明一个抛出该异常的构造函数
+-》当类被初始化时，父类的构造函数会被调用。
+★★如果父类的构造函数抛出异常，你也得声明你的构造函数会抛出异常
+★在定义了服务类后，还必须向RMI注册，使用java.rmi.Naming的rebind()来注册服务
+-》使用Naming.rebind()注册服务前rmiregistry必须启动
+★客户端取得stub对象（由rmic生成的stub后缀的文件）：
+MyRemote service=(MyRemote)Naming.lookup("rmi://127.0.0.1/Remote Hello");
+-》MyRemote是定义的接口的名称，客户端不需要知道【服务类】（接口实现类）的名称
+★RMI registry必须在同一台机器上与远程服务一块执行，且必须在对象的注册之前启动
+★动态类下载：stub对象被加上URL，指示RMI可以去哪里找到类文件（什么类？服务类？）
+
+------------------------servlet
+★servlet是运行在服务器上的程序代码，执行用户发出的请求
+-》servlet用到了RMI，servlet通过RMI来与EJB通信
+★J2EE技术混合了servlet和EJB
+★servlet不是java标准的一部分，因此它需要的一部分类必须另外下载
+（J2EE带有servlet函数库）
+★你必须要有支持servlet的服务器才行，如Tomcat
+★一般的servlet是继承HttpServlet并覆盖doGet和doPost来创建的
+★servlet要输出带有完整标识的HTML网页
+★servlet和JSP（Java Server Pages）：
+1、servlet：让你写出带有HTML输出的类
+2、JSP：让你写出带有Java程序的网页
+★JSP的好处：可以写出动态内容的网页（内嵌的程序代码可以在执行时处理）
+此外，JSP可以更容易地写出HTML部分而不像servlet那样出现一堆难以阅读的print命令
+
+------------------------EJB
+★RMI适合编写并运行远程服务，但这对于大型网站服务是不够的，你需要J2EE
+★J2EE（Java 2 Enterprise Edition）服务器包括Web服务器、Enterprise JavaBeans（EJB）服务器
+★J2EE的解决方案很庞大，属于重量级
+★EJB服务器具有一组额外的服务，包括：交易管理、安全性、并发性、数据库和网络功能等
+★★EJB架构示意图（简略版：P631）
+★EJB架构中的客户端通常是：同一J2EE服务器上的servlet
+
+------------------------Jini
+★Jini也是使用RMI，但多了：
+1、自适应探索
+2、自恢复网络
+★Jini-自适应探索
+*【Jini查询服务】在网络上启动，并使用IP组播技术告知网络上的其他机器
+*已经启动的另一个【Jini服务】会向查询服务注册。注册的不是名称，而是【实现的接口】，并将【序列化对象】返给查询服务
+*客户询问查询服务，是否有实现某接口。若有，则查询服务直接返回对应的序列化对象
+★Jini-自恢复网络
+*Jini服务在查询服务处注册之后，会得到一份“租约”，必须定期更新，否则查询服务会认为其已离线，不可用
+
+------------------------其他
+★String存在不变性，包装类（Integer）也存在不变性
+★断言assert是用来debug的，默认情况下，assert命令会被忽略。部署安装的程序代码中留有assert并不是坏事！
+★assert后还可以输出一些debug信息（类似print）
+assert(height>0):"height="+height;
+★静态内部类只能存取外部类的静态成员
+★基本上所有内部类都是嵌套的，但【不是所有嵌套类都是内部的】：
+匿名类，在需要类实例的地方【临时】创建出该类：button.addActionListener(new ActionListener(){
+public void actionPerformed(ActionEvent ev){
+...;
+}});/*这里ActionListener是接口，不能创建接口的实例，但语法就是这样*/
+
+}
+★★Java的存取权限
+default：只能被【同一个包】存取
+protected：与default类似，但允许不同包中的子类继承它的成员
+★由于String的不变性，因此使用StringBuffer、StringBuilder来操作String比较有效率
+-》从Java 5.0起，你应该以StringBuilder来取代StringBuffer（除非在thread安全环境中进行）
+★Java的多维数组只是对数组的引用
+★枚举：一组【常量】来代表可用值的集合

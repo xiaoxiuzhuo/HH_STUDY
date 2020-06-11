@@ -1,0 +1,127 @@
+2020-6-8：
+★vue和thymeleaf有什么关系：
+【vue】：vue是前端渲染，后端数据以json形式提供，前后端交互只有纯数据
+
+【thymeleaf】：模板引擎。thymeleaf相当于过去的jsp，当然比jsp先进不少，是后端渲染，后端直接推送的是整个html文档，缺点是服务器压力增大，渲染的东西比较多
+
+-》有前端就Vue，没有就用模板开发jsp？ 
+
+★★（springboot）在application.properties中，classpath指的是
+1、src路径下的文件，在编译后都会放到 WEB-INF/classes 路径下。默认classpath 就是指这里。
+2、用maven构建 项目时，resources目录就是默认的classpath 《-
+
+2020-6-7：
+★一般说来Vue不会直接使用原生的Ajax而是使用ajax框架。而：
+√ 1、fetch.js（官方推荐） 
+√ 2、axios.js （官方推荐）
+3、原生ajax（不直接使用）
+4、JQuery（不如1、2方便）
+5、vue-resource（不再维护）
+-》fetch.js、axios.js是眼下比较流行的ajax框架
+
+★ajax（Asynchronous、JavaScript、And、XML（异步的 JavaScript 和 XML））：
+Ajax就是用JS向服务端发起一个请求，并获取服务器返回的数据
+-》优点：
+1、不刷新页面
+2、可以获得任意类型的数据
+（在未出现Ajax之前，客户端与服务器之间进行数据交互，只能通过特定的标签来实现）
+
+★前端中的“脚手架”：有人帮你把这个开发过程中要用到的工具、环境都配置好了，你就可以方便地直接开始做开发，专注你的业务，而不用再花时间去配置这个开发环境，这个开发环境就是脚手架。
+
+——————————————————————————————
+Nginx与反向代理：
+★Nginx是一个高性能的HTTP和反向代理web服务器，同时也提供了IMAP/POP3/SMTP服务
+★背景介绍：
+-》Apache HTTP Server和Nginx本身不支持生成动态页面，但它们可以通过其他模块来支持（例如通过Shell、PHP、Python脚本程序来动态生成内容）
+-》如果想要使用Java程序来动态生成资源内容，使用这一类HTTP服务器很难做到。Java Servlet技术以及衍生的Java Server Pages技术可以让Java程序也具有处理HTTP请求并且返回内容（由程序动态控制）的能力，Tomcat正是支持运行Servlet/JSP应用程序的容器
+★虽然Tomcat也可以认为是HTTP服务器，但通常它仍然会和Nginx配合在一起使用：
+【动静分离】：运用Nginx的反向代理功能分发请求：所有动态资源的请求交给Tomcat，而静态资源的请求（例如图片、视频、CSS、JavaScript文件等）则直接由Nginx返回到浏览器，这样能大大减轻Tomcat的压力
+【负载均衡】：当业务压力增大时，可能一个Tomcat的实例不足以处理，那么这时可以启动多个Tomcat实例进行水平扩展，而Nginx的负载均衡功能可以把请求通过算法分发到各个不同的实例进行处理
+
+★Nginx处理静态文件有较大性能优势
+
+★Nginx适合做前端服务器，负载性能很好；
+★★反向代理（Reverse Proxy）方式：指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时代理服务器对外就表现为一个服务器。
+-》反向代理模式屏蔽或者隐藏了真实服务端信息
+-》作用：
+1、保证内网安全：将反向代理作为公网访问地址，Web服务器则是内网
+2、负载均衡：通过反向代理服务器来优化网站的负载
+
+★正向代理：翻墙上外网（代理服务器将用户请求发给真正的服务器）
+-》正向代理模式屏蔽或者隐藏了真实客户端信息
+
+★项目静态资源包括：图片、CSS、JS
+★bootstrap：目前最受欢迎的前端框架？
+-》基于 HTML、CSS、JAVASCRIPT
+★CSS：层叠样式表 (Cascading Style Sheets)
+作用：定义如何显示HTML元素（如：颜色、字体等）
+-》实现了内容与表现分离
+-》外部样式表可以极大提高工作效率、通常存储在CSS文件中
+
+2020-6-2：
+step1：在实体类中的JPA注解的作用是什么？什么时候会使用到这些注解？
+
+step2：定义DAO类，并继承自JPA，这是JPA最方便的地方（仅仅需要继承）
+
+step3：定义Service类，自动装配DAO对象
+@Service：spring提供
+@Autowired：spring提供
+里面定义一个返回实体对象集合的方法，采用了按主键"id"降序排列（排序函数Sort由Spring提供）
+
+step4：定义跳转控制器
+@Controller：Spring提供
+@GetMapping：Spring提供
+定义的相关函数返回类型都是String，没有指定后缀的话，就是html文件？那JSP呢？
+因为是做前后端分离，所以数据是通过 RESTFUL接口来取的？这句话怎么理解？
+
+step5：定义RESTFUL控制器
+@RestController：对每个方法的返回值都会直接转换成json数据格式
+-》@RestController注解相当于@ResponseBody ＋ @Controller合在一起的作用
+这里直接注解一个Service类，然后调用Service里的方法
+
+step6：添加一个配置类，继承自WebMvcConfigurerAdapter。
+用于允许所有的请求都跨域？
+
+step7：定义一个全局异常处理类，实际上也是一个@RestController
+使用@ControllerAdvice：表明它是一个增强的Controller，最常用的就是异常处理
+
+step8：定义配置文件：
+spring.datasource.url=jdbc:mysql://127.0.0.1:3306/tmall_springboot?characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=0123
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto = none
+
+spring.thymeleaf.mode=LEGACYHTML5
+spring.thymeleaf.encoding=UTF-8
+spring.thymeleaf.servlet.content-type=text/html
+spring.thymeleaf.cache=false
+
+server.servlet.context-path=/tmall_springboot
+
+spring.servlet.multipart.maxFileSize=100MB
+spring.servlet.multipart.maxRequestSize=100MB
+
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+spring.jpa.show-sql=true
+
+step9：准备静态资源，放在webapp下
+springboot 的静态资源会在 static 目录下，上传后的图片就无法被【立即】访问（真的吗？）
+
+step10：准备HTML文件：
+注意：若想在【include.admin】的上级目录include下新建一个目录test，则需要右击include的上级目录，新建目录（注意与Package的区别），并键入：include/test
+
+★注意如果webapp是手动建立的，IDEA可能不会识别！
+-》在项目结构设置中，选择Modules，在Web项目卡下，手动添加Web Resource Directories
+（IDEA中，识别后的webapp文件夹带有一个蓝色小点）
+-》同时，在JS代码<script src="..."></script>导入js相关包时，注意其是否找到，如果未识别，可能是项目的context设置不对，此时可在Settings中手动设置，或者直接在相关语句处设置
+
+★关于分页：
+1、JPA提供了分页工具：Page，但不支持页数的动态范围显示（当前页的前后几页）
+2、Mybatis提供了分页工具：PageHelper（支持页数的动态范围显示）
+
+
+
+
+
