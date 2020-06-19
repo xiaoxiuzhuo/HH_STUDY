@@ -1,0 +1,40 @@
+package demo;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Stack;
+
+public class Demo {
+	public static void main(String[] args) {
+		Scanner sc=new Scanner(System.in);
+		while(sc.hasNext()) {
+			Stack<Integer> stack=new Stack<Integer>();
+			int low=sc.nextInt();
+			int  high=sc.nextInt();
+			StringBuffer sb=new StringBuffer();
+			for(int i=low;i<high;i++) {
+				if(isPrime(i)) sb.append(i+" ");
+				
+			}
+			int sum_Gewwei=0,sum_shiwei=0;
+			String [] ss=sb.toString().split(" ");
+			for(int i=0;i<ss.length;i++) {
+				int n=Integer.valueOf(ss[i]);
+				sum_Gewwei+=n%10;
+				sum_shiwei+=(n/10)%10;
+			}
+			System.out.println(Math.min(sum_Gewwei, sum_shiwei));
+			
+		}
+		
+	}
+	public static boolean isPrime(int num) {
+		int m=0;
+		for(int k=2;k<num;k++){
+			if(num%k!=0) m++;}
+			if(m==num-2) {return true;}
+			else{
+				return false;
+			}
+		} 
+	
+}
