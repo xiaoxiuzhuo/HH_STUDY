@@ -1,0 +1,17 @@
+下载安装Git
+生成ssh公钥私钥
+$ ssh-keygen-t rsa-C your_email@youremail.com
+本地ssh文件夹中仅显示私钥，需在Git上查找公钥，并将公钥添加到github上
+$ cd ~/.ssh
+$ vim id_rsa.pub
+(copy公钥)
+:qa +enter(退出文件id_rsa.pub）
+在github->settings添加ssh公钥
+
+创建本地username useremail
+git config --global user.name "coder-pig"
+git congif --global user.email "779878443@qq.com"
+
+定位到目标地址，从远端下载库到本地
+cd /D/work_github
+git clone …
