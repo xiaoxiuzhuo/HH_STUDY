@@ -1,0 +1,77 @@
+/**
+ * this is the coreJavaTech study codes
+ * @author hmb
+ */
+public class scratch
+{
+    public static void main(String[] args)
+    {
+        System.out.print("bu huan hang: ");
+        System.out.println("we will not use 'hello world.'");
+    }
+}
+
+
+##########################################################
+
+/**
+ * 变量类型
+ * @author hmb
+ */
+public class scratch
+{
+    public static void main(String[] args)
+    {
+       double a = 3.14;
+       double b = 2.769343;
+       int c = 365;
+       int d = 12;
+       char e = '吃';
+       boolean f = false;
+       String g = "不可描述";
+       System.out.println(a+" "+'\n'+b+'\n'+c+'\n'+d+'\n'+e+'\n'+f+'\n'
+       +g+'\n');
+    }
+}
+
+##########################################################
+/**
+ * 变量类型转换
+ * @author hmb
+ */
+public class scratch
+{
+    public static void main(String[] args)
+    {
+       short a = 1;
+       short b= 1;
+
+       System.out.println(getType(a+b)); // 和的类型是 int
+    }
+
+    private static String getType(Object a) //得到变量的类型
+    {
+        return a.getClass().toString();
+    }
+}
+
+##########################################################
+/**
+ * 变量的作用域
+ * @author hmb
+ */
+public class scratch
+{
+    int i = 1;
+
+    public void  method1(int i){
+        System.out.println(i);
+    }
+
+    public static void main(String[] args)
+    {
+        new scratch().method1(5);  // 就近原则
+    }
+
+}
+##########################################################
