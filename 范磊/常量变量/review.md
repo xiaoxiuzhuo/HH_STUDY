@@ -120,11 +120,49 @@
   3. 会被子类继承的方法，通常使用protected
   4. package用的不多，一般新手会用package,因为还不知道有修饰符这个东西
 * 包
-* 类属性
-* 类方法
-* 属性初始化
-* 单例模式：整个类中只有**一个实例化对象**；
-* 枚举类型：
+* 类属性：由static修饰，静态属性，被所有对象obj共享（类实例化对象）,由**类名.属性名** 调用
+* 类方法：被static方法修饰，可以直接由**类名.方法**()调用（静态方法）；对象方法称为非静态方法，无法直接调用
+* 属性初始化：构建的属性赋值
+  (1)对象属性，通常包含以下三个方面：
+  public class Hero {
+    public String name = "some hero"; **//声明该属性的时候初始化**
+    protected float hp;
+    float maxHP;
+    {
+        maxHP = 200; **//初始化块**
+    }  
+    public Hero(){
+        hp = 100; **//构造方法中初始化** 
+    }
+}
+(2) 类属性：声明时，或者static块(自动运行运行)
+* 单例模式：整个类中在JVM只有**一个实例化对象obj**；利用priviate构造方法，保证其无法外部实例化，接着利用public方法调用指向该类实例化对象的一个类属性；
+  通常分为两种，懒汉式和饿汉式
+  懒汉式：只有调用该public方法时，才回构建该唯一对象实例
+  public class GiantDragon {
+  
+    **//私有化构造方法使得该类无法在外部通过new 进行实例化**
+    private GiantDragon(){       
+    }
+    **//准备一个类属性，用于指向一个实例化对象，但是暂时指向null**
+    private static GiantDragon instance; 
+    //public static 方法，返回实例对象
+    public static GiantDragon getInstance(){
+        **//第一次访问的时候，发现instance没有指向任何对象，这时实例化一个对象**
+        if(null==instance){
+            instance = new GiantDragon();
+        }
+        //返回 instance指向的对象
+        return instance;
+    }   
+}
+  饿汉式：直接创建指向该对象实例的类变量，每次加载都回调用该唯一的对象实例public方法
+* 枚举类型：针对不存在与基本数据类型中的数据而构建的一种**数据集类型**
+  public **enum** Season {
+    SPRING,SUMMER,AUTUMN,WINTER
+}
+通常和switch关键字一起使用
+## 8.接口与继承
      
         
 
