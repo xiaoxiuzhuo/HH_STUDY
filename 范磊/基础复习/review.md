@@ -175,6 +175,7 @@
    //任何类型 final, static 变量
    //抽象方法，只声明，没有方法体，在实现接口的类中，进一步实现方法
 }
+
 ### 8.1 对象转型
 * 引用类型，和对象类型  Class 对象类型=new 引用类型（）； （对象类型与引用类型不一致，就涉及转换问题）
 * 通常涉及**向上转型和向下转型**，即子类作为一个普通父类来使用，父类的对象类型由子类的引用类型来声明。以及反向。
@@ -185,7 +186,55 @@
 
   对象B=对象A;              **向下转型**，容易方法丢失，有风险，视情况而定，**注意强制转换使用** 对象B=（B 类）对象A；  通常强转~~~~
 
-### 8.2 重写
+### 8.2 方法重写
+* 重写又称覆盖（override）：通常是指**子类继承了父类方法后**，对父类中的方法，进行重新定义（声明方式和方法名完全不变，仅改变方法体）
+* 注意与方法重载的区别：重载是指在同一个类中，对方法名相同的方法在参数和方法体上的不同实现过程
+  public void Test(){};
+  public void Test(string strs){};
+  public void Test(string strs,int ints){};
+  注意：修饰和返回类型不同，不是重载的核心。
+
+### 8.2 多态
+* 多态的体现，主要体现在：方法的覆写，重载等；类的向上转型等（父类引用对象指向子类）。
+#### 隐藏
+针对子类继承父类的问题中，父类中的类方法，将其覆写一次，然后通过向上转型的方式，实现父类对子类覆写方法的调用
+public class Hero {
+    public String name;
+    protected float hp;
+  
+    //类方法，静态方法
+    //通过类就可以直接调用
+    public static void battleWin(){
+        System.out.println("hero battle win");
+    }
+      
+}
+public class ADHero extends Hero implements AD{
+  
+    @Override
+    public void physicAttack() {
+        System.out.println("进行物理攻击");
+    }
+     
+    // 父类的battleWin方法的隐藏
+    public static void battleWin(){
+        System.out.println("ad hero battle win");
+    }   
+     
+    public static void main(String[] args) {
+        Hero.battleWin();
+        ADHero.battleWin();
+    }
+  
+}
+
+Hero h =new ADHero();
+h.battleWin();  // 实现子类覆写方法的调用
+
+
+#### super 关键字
+针对父类中的构造方法，子类采用 super(参数) 方式实现显式调用
+此外也可以调用父类中的属性，**super.属性名  或者  this.属性名**
      
         
 
