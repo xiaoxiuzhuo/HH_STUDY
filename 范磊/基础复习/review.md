@@ -236,7 +236,25 @@ h.battleWin();  // 实现子类覆写方法的调用
 针对父类中的构造方法，子类采用 super(参数) 方式实现显式调用
 此外也可以调用父类中的属性，**super.属性名**   this.属性名() 调用当前类属性
 
-#### object类
+#### object类（超类）
+* 声明一个类的时候，默认是继承了Object，**所有类都默认继承**，该object类中包含了多种方法，tostring(),finalize()（垃圾回收，由JVM自动调用）,euqals();==,等各种操作方法。
+
+**//源码构成**
+public String toString(){
+        return name;
+    }
+     
+    public void finalize(){
+        System.out.println("这个英雄正在被回收");
+    }
+
+  public boolean equals(Object o){
+        if(o instanceof Hero){
+            Hero h = (Hero) o;
+            return this.hp == h.hp;
+        }
+        return false;
+    }
 
 
      
